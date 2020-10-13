@@ -12,6 +12,7 @@ app.use(express.json());
 
 app.use('/api/users', require('./routes/users.route'));
 app.use('/api/auth', require('./routes/auth.route'));
+app.use('/api/link', require('./routes/link.route'));
 
 app.listen(port, '0.0.0.0', () => {
     console.log(`Server working in port ${port}`);
