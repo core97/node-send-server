@@ -18,7 +18,7 @@ module.exports = {
         link.original_name = original_name;
 
         try {
-            // usuarios autenticados
+            // si el usuario está autenticado
             if (req.user) {
                 const { password, downloads } = req.body;
 
@@ -36,9 +36,31 @@ module.exports = {
             await link.validate();
             await link.save();
 
-            return res.status(200).json({ msg: link.url });
+            return res.status(200).json({ url: link.url });
         } catch (error) {
             console.log(error);
         }
+    },
+    getLink: async (req, res, next) => {
+        const { url } = req.params;
+
+        const link = await Link.findOne({ url });
+
+        if (!link) {
+            return res.status(404).json({ msg: 'No existe ese *link*' });
+        }
+
+        if (link.downloads === 1) {
+            req.filename = link.name;
+            await Link.findOneAndRemove({ url });
+            // elimina un archivo desde 'files.controller'
+            return next();
+        } else {
+            link.downloads--;
+            await link.validate();
+            await link.save();
+        }
+
+        return res.status(200).json({ filename: link.name });
     }
 }
