@@ -1,16 +1,23 @@
-const express = require('express');
-const { check } = require('express-validator');
+const express = require("express");
+const { check } = require("express-validator");
 const router = express.Router();
-const linkController = require('../controllers/link.controller');
-const filesController = require('../controllers/file.controller');
-const authMiddleware = require('../middleware/auth.middleware');
+const linkController = require("../controllers/link.controller");
+const authMiddleware = require("../middleware/auth.middleware");
 
-router.post('/', [
-    check('name', 'Sube un archivo').not().isEmpty(),
-    check('original_name', 'Sube un archivo').not().isEmpty(),
-    authMiddleware
-], linkController.newLink);
+router.post(
+  "/",
+  [
+    check("filename", "Sube un archivo").not().isEmpty(),
+    check("originalFilename", "Sube un archivo").not().isEmpty(),
+    authMiddleware.isValidToken,
+  ],
+  linkController.newLink
+);
 
-router.get('/:url', linkController.getLink, filesController.deleteFile);
+router.post("/:url", linkController.verifyPassword, linkController.getLink);
+
+router.get("/", linkController.getAllLinks);
+
+router.get("/:url", linkController.hasPasswordLink, linkController.getLink);
 
 module.exports = router;

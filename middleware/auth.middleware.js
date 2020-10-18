@@ -1,17 +1,21 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-module.exports = (req, res, next) => {
-    const authHeader = req.get('Authorization');
+module.exports = {
+  isValidToken: (req, res, next) => {
+    const authHeader = req.get("Authorization");
 
     if (authHeader) {
+      const token = authHeader.split(" ")[1];
+      if (token) {
         try {
-            const token = authHeader.split(' ')[1];
-            const user = jwt.verify(token, process.env.HASH_ENCRYPTATION);
-            req.user = user;
+          const user = jwt.verify(token, process.env.HASH_ENCRYPTATION);
+          req.user = user;
         } catch (error) {
-            return res.status(401).json({ msg: 'JWT no valid' });
+          console.log(error.message);
+          return res.status(401).json({ msg: "JWT no valid" });
         }
+      }
     }
-
     return next();
-}
+  },
+};

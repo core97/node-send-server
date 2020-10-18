@@ -9,6 +9,6 @@ router.post('/', [
     check('password', 'La *password* debe ser al menos 6 caracteres').isLength({ min: 6 }),
 ], authController.authenticateUser);
 
-router.get('/', [authMiddleware], authController.userAuthenticated);
+router.get('/', [authMiddleware.isValidToken], authController.userAuthenticated);
 
 module.exports = router;
